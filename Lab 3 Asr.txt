@@ -1,0 +1,99 @@
+-- Create exchange V-array --
+create type exchange_vaty_401 as varray(5) of varchar(12)
+/
+-- Create stock  type --
+create type stock_ty_401 as object(
+	company char(7),
+	cprice number(6,2),
+	exchanges exchange_vaty_401,
+	ldividend number(4,2),
+	eps number(4,2)
+)
+/
+-- Create address type --
+create type address_ty_401 as object(
+	streetNo char(10),
+	streetName char(15),
+	suburb char(20),
+	state char(15),
+	pin char(10)
+)
+/
+-- Create investment type --
+create type investment_ty_401 as object(
+	company ref stock_ty_401,
+	pdate date,
+	qty number(6),
+	ppeice number(6,2)
+)
+/
+-- Create investment nested table type --
+create type investment_ntty_401 as table of investment_ty_401
+/
+
+-- Client type --
+create type client_ty_401 as object(
+	clno char(3),
+	name varchar(12),
+	Address address_ty_401,
+	investments investment_ntty_401
+)
+/
+
+-- Create stock table --
+create table stock_401 of stock_ty_401(
+	constraint stock_PM401 primary key(company)
+)
+/
+
+-- Cretae client table --
+create table client_401 of client_ty_401(
+	constraint clent_PM401 primary key(clno)
+) nested table investments store as investment_nttable
+/
+
+-- Alter investment nested table --
+alter table investment_nttable
+add scope for(company) is stock_401
+/
+
+-- Insert values to stock --
+insert into stock_401 values 
+(stock_ty_401('BHP', 10.50, exchange_vaty_401('Sydney', 'New York'), 1.50, 3.20))
+/
+
+insert into stock_401 values 
+(stock_ty_401('IBM', 70.00, exchange_vaty_401('New York', 'London', 'Tokyo' ), 4.25, 10.00))
+/
+
+insert into stock_401 values 
+(stock_ty_401('INTEL', 76.50, exchange_vaty_401('New York', 'London'), 5.00, 12.40))
+/
+
+insert into stock_401 values 
+(stock_ty_401('FORD', 40.00, exchange_vaty_401('New York'), 2.00, 8.50))
+/
+
+insert into stock_401 values 
+(stock_ty_401('INFOSYS', 45.00, exchange_vaty_401('New York'), 3.00, 7.80))
+/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
